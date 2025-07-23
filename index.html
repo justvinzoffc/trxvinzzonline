@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chat Angkasa ke Admin</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+      overflow: hidden;
+      color: white;
+    }
+
+    .stars {
+      width: 2px;
+      height: 2px;
+      background: white;
+      position: absolute;
+      animation: moveStars 50s linear infinite;
+    }
+
+    @keyframes moveStars {
+      from { transform: translateY(0); }
+      to { transform: translateY(-2000px); }
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 400px;
+      margin: 80px auto;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    h2, h3 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #00f0ff;
+    }
+
+    input, textarea, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 10px;
+      background: rgba(0,0,0,0.4);
+      color: #fff;
+      font-size: 16px;
+    }
+
+    input::placeholder, textarea::placeholder {
+      color: #ccc;
+    }
+
+    button {
+      background: #00f0ff;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #0ff;
+    }
+
+    #chatSection {
+      display: none;
+    }
+
+    .stars-container {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="stars-container" id="stars"></div>
+
+  <div class="container">
+    <h2>🚀 Login 🚀</h2>
+    <input type="text" id="waNumber" placeholder="Nomor WhatsApp (cth: 62xxx)">
+    <button onclick="login()">Login</button>
+
+    <div id="chatSection">
+      <h3>🌌 Kirim Pesan Ke Vinzz</h3>
+      <textarea id="message" rows="5" placeholder="Tulis pesan kamu..."></textarea>
+      <button onclick="sendMessage()">Kirim Pesan</button>
+    </div>
+  </div>
+
+  <script>
+    const BOT_TOKEN = '7773319451:AAGejd6Zl6ItHBBn3ILOziDJljMhA1-hmzw';
+    const ADMIN_ID = '6696150439';
+
+    function login() {
+      const wa = document.getElementById('waNumber').value.trim();
+      if (!wa.match(/^\d{10,15}$/)) {
+        alert('Masukkan nomor WA yang valid!');
+        return;
+      }
+      localStorage.setItem('wa', wa);
+      document.getElementById('chatSection').style.display = 'block';
+    }
+
+    function sendMessage() {
+      const wa = localStorage.getItem('wa');
+      const message = document.getElementById('message').value.trim();
+      if (!message) {
+        alert('Pesan tidak boleh kosong!');
+        return;
+      }
+
+      const text = `📩 Pesan Baru dari User\n\n📱 WA: ${wa}\n📝 Pesan: ${message}`;
+      const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+
+      fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: ADMIN_ID, text })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok) {
+          alert('🚀 Pesan berhasil dikirim...🚀');
+          document.getElementById('message').value = '';
+        } else {
+          alert('Gagal mengirim pesan...');
+        }
+      })
+      .catch(err => {
+        alert('Error: ' + err.message);
+      });
+    }
+
+    // Bintang animasi
+    const starsContainer = document.getElementById('stars');
+    for (let i = 0; i < 150; i++) {
+      const star = document.createElement('div');
+      star.classList.add('stars');
+      star.style.top = `${Math.random() * 100}%`;
+      star.style.left = `${Math.random() * 100}%`;
+      star.style.opacity = Math.random();
+      star.style.width = star.style.height = `${Math.random() * 2 + 1}px`;
+      starsContainer.appendChild(star);
+    }
+  </script>
+
+</body>
+</html>
